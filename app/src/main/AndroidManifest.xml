@@ -7,7 +7,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_action"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
@@ -15,6 +15,7 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -38,17 +39,19 @@
         <activity
             android:name=".activity.TripDetails"
             android:label="@string/title_activity_trip_details"
-            android:parentActivityName=".activity.ViewTripActivity">
-
+            android:parentActivityName=".activity.ViewTripActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.cmu.fairshare.ViewTripActivity" />
-
         </activity>
         <activity
             android:name=".activity.TripDetailsEditActivity"
             android:label="@string/title_activity_trip_details_edit"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity
+            android:name=".activity.ViewFriendsActivity"
+            android:label="@string/title_activity_view_friends" >
         </activity>
     </application>
 

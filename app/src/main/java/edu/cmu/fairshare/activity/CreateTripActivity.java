@@ -1,12 +1,23 @@
 package edu.cmu.fairshare.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
+
+import java.util.List;
+
 import edu.cmu.fairshare.R;
 
 public class CreateTripActivity extends Activity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,5 +43,25 @@ public class CreateTripActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void chooseFriends(View v) {
+        Request request = Request.newMyFriendsRequest(
+                Session.getActiveSession(),
+                new Request.GraphUserListCallback() {
+
+                    @Override
+                    public void onCompleted(List<GraphUser> users, Response response) {
+                        System.out.println("Users: " + users);
+                        for(int i=0; i<users.size();i++) {
+                            ViewFriendsActivity.app_users.add(users.get(i));
+                        }
+                    }
+                });
+        request.executeAsync();
+
+        Intent intent = new Intent(this, ViewFriendsActivity.class);
+        startActivity(intent);
+
     }
 }

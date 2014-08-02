@@ -11,9 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.model.GraphUser;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
@@ -69,26 +66,11 @@ public class MyActivity extends Activity {
                 } else if (user.isNew()) {
                     Log.d(MyActivity.TAG,
                             "User signed up and logged in through Facebook!");
-                    getFacebookIdInBackground();
                     showUserDetailsActivity();
                 } else {
                     Log.d(MyActivity.TAG,
                             "User logged in through Facebook!");
-                    getFacebookIdInBackground();
                     showUserDetailsActivity();
-                }
-            }
-        });
-    }
-
-    private static void getFacebookIdInBackground() {
-        Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
-            @Override
-            public void onCompleted(GraphUser user, Response response) {
-                if (user != null) {
-                    ParseUser.getCurrentUser().put("fbId", user.getId());
-                    ParseUser.getCurrentUser().put("displayName", user.getFirstName()+" "+user.getLastName());
-                    ParseUser.getCurrentUser().saveInBackground();
                 }
             }
         });

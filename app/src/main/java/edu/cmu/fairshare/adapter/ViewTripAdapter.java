@@ -47,20 +47,20 @@ public class ViewTripAdapter extends ParseQueryAdapter<ParseObject> {
             viewHolder.dateText = (TextView) view.findViewById(R.id.trip_date);
             viewHolder.locationText = (TextView) view.findViewById(R.id.trip_location);
             view.setTag(viewHolder);
-            viewHolder.labelText.setTag(parseObject.getString("tripName"));
+            viewHolder.labelText.setTag(parseObject.getString("trip_name"));
         } else {
             view = convertView;
-            ((ViewHolder) view.getTag()).labelText.setTag(parseObject.getString("tripName"));
+            ((ViewHolder) view.getTag()).labelText.setTag(parseObject.getString("trip_name"));
         }
         for (int i = 0; i<getCount();i++){
             if(parseObject.equals((ParseObject)getItem(i))){
-                Log.i("Inside",parseObject.getString("tripName"));
+                Log.i("Inside","Success");
             }
         }
         ViewHolder holder = (ViewHolder) view.getTag();
-        holder.labelText.setText(parseObject.getString("tripName"));
+        holder.labelText.setText(parseObject.getString("trip_name"));
         holder.dateText.setText(String.valueOf(parseObject.getDate("tripDate")));
-        holder.locationText.setText(parseObject.getString("startLocation")+" - "+parseObject.getString("endLocation"));
+        holder.locationText.setText(parseObject.getString("start_location")+" = "+parseObject.getString("end_location"));
         return view;
     }
 

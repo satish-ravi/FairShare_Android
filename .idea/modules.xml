@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FairShare.iml" filepath="$PROJECT_DIR$/FairShare.iml" />
-      <module fileurl="file://$PROJECT_DIR$/FairShare_Android.iml" filepath="$PROJECT_DIR$/FairShare_Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/facebook/facebook.iml" filepath="$PROJECT_DIR$/facebook/facebook.iml" />
     </modules>

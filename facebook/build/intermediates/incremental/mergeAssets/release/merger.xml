@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="2" >
+
+    <dataSet config="main" >
+        <source path="C:\MSIT-CMU\MobileApp-08723\Project\Latest\FairShare\facebook\src\main\assets" />
+    </dataSet>
+    <dataSet config="release" >
+        <source path="C:\MSIT-CMU\MobileApp-08723\Project\Latest\FairShare\facebook\src\release\assets" />
+    </dataSet>
+
+</merger>
