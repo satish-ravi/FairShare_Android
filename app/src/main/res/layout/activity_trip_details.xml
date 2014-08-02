@@ -1,0 +1,20 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/custom_margin"
+    android:paddingBottom="@dimen/custom_margin"
+    tools:context="edu.cmu.fairshare.activity.TripDetails">
+    <include
+        android:id="@+id/header_layout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/header" />
+    <ListView
+        android:id="@+id/details_list_id"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header_layout1">
+    </ListView>
+
+</RelativeLayout>

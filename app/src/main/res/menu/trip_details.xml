@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="edu.cmu.fairshare.activity.TripDetails" >
+    <item
+        android:id="@+id/edit"
+        android:orderInCategory="100"
+        android:title="@string/trip_edit"
+        android:showAsAction="never"/>
+    <item
+        android:id="@+id/total"
+        android:orderInCategory="100"
+        android:title="@string/trip_total"
+        android:showAsAction="always"/>
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+</menu>

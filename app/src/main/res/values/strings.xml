@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Fair Share</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="login_intro">Fair Share</string>
+    <string name="appID">305615306275190</string>
+    <string name="title_facebook_login">FaceBook Login</string>
+    <string name="title_activity_view_trip">ViewTripActivity</string>
+    <string name="create_trip">+</string>
+    <string name="trip_create">Create  Trip</string>
+    <string name="title_activity_create_trip">CreateTripActivity</string>
+    <string name="select_friends">Choose Friends</string>
+    <string name="title_activity_trip_details">TripDetails</string>
+    <string name="title_activity_trip_details_edit">TripDetailsEditActivity</string>
+    <string name="trip_edit">Edit</string>
+    <string name="trip_total">Total</string>
+    <string name="trip_done">Done</string>
+</resources>
