@@ -1,60 +1,63 @@
 package edu.cmu.fairshare.activity;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.Session;
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
+import java.util.List;
 
 import edu.cmu.fairshare.R;
 import edu.cmu.fairshare.adapter.TripDetailsAdapter;
-import edu.cmu.fairshare.adapter.ViewTripAdapter;
-import edu.cmu.fairshare.model.Trip;
-import edu.cmu.fairshare.model.User;
+import edu.cmu.fairshare.model.TripUser;
 
 public class TripDetails extends Activity {
     Session session;
-    int itemPosition;
     TripDetailsAdapter userArrayAdapter;
+    ArrayList<TripUser> tripUsersList;
+    String trip;
+    String tripName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_details);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        TextView labelTextView = (TextView) findViewById(R.id.trip_label);
         session = ParseFacebookUtils.getSession();
         if (session != null && session.isOpened()) {
             Intent intent = getIntent();
-            String tripID = (String)intent.getSerializableExtra("tripID");
+            trip = (String)intent.getSerializableExtra("tripID");
+            tripName = (String) intent.getSerializableExtra("tripName");
+            labelTextView.setText(tripName);
             final ListView tripDetailsListView = (ListView) findViewById(R.id.details_list_id);
-            userArrayAdapter = new TripDetailsAdapter(this,getModel());
+            tripUsersList = new ArrayList<TripUser>();
+            getTripUserData(trip);
+            userArrayAdapter = new TripDetailsAdapter(this,tripUsersList);
             tripDetailsListView.setAdapter(userArrayAdapter);
-            LayoutInflater inflater = getLayoutInflater();
             tripDetailsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    User item = (User) userArrayAdapter.getItem(position);
                     if(userArrayAdapter.getSelectedItemArray().get(position)==1)
                         userArrayAdapter.getSelectedItemArray().set(position,0);
                     else
                         userArrayAdapter.getSelectedItemArray().set(position,1);
                     userArrayAdapter.notifyDataSetChanged();
-                    Toast.makeText(getApplicationContext(), item.getUserName() + " selected "+(position), Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -79,36 +82,39 @@ public class TripDetails extends Activity {
         }
         if(id==R.id.edit){
             Intent intent = new Intent(this, TripDetailsEditActivity.class);
+            intent.putExtra("tripID",trip);
+            intent.putExtra("tripName",tripName);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private ArrayList<User> getModel() {
-        ArrayList<User> list = new ArrayList<User>();
-        list.add(get("user 1", "location1", "location_1", 150, 23));
-        list.add(get("user 2", "location2", "location_2", 20, 2.3));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("user 1", "location1", "location_1", 150, 23));
-        list.add(get("user 2", "location2", "location_2", 20, 2.3));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("user 1", "location1", "location_1", 150, 23));
-        list.add(get("user 2", "location2", "location_2", 20, 2.3));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-
-        return list;
+    @Override
+    public void onBackPressed() {
+        if(session!=null && session.isOpened()) {
+            Intent setIntent = new Intent(this,ViewTripActivity.class);
+            startActivity(setIntent);
+        }
     }
 
-    private User get(String userName, String startLocation, String dropLocation, double cost, double distance) {
-        User user = new User();
-        user.setUserName(userName);
-        user.setStartLocation(startLocation);
-        user.setDropLocation(dropLocation);
-        user.setCost(cost);
-        user.setDistance(distance);
-        return user;
+    private void getTripUserData(String tripId){
+        ParseQuery<TripUser> query = ParseQuery.getQuery("TripUser");
+        ParseObject object = ParseObject.create("Trip");
+        object.setObjectId(tripId);
+        query.whereEqualTo("tripId",object);
+        query.findInBackground(new FindCallback<TripUser>() {
+            public void done(List<TripUser> usersList, ParseException e) {
+                if (e == null) {
+                    tripUsersList.addAll(usersList);
+                    userArrayAdapter.notifyDataSetChanged();
+                    for(int i = 0; i<tripUsersList.size();i++){
+                        userArrayAdapter.getSelectedItemArray().add(0);
+                    }
+                } else {
+                    Log.i("Error", e.toString());
+                    Toast.makeText(getApplicationContext(),"Error Retrieving data",Toast.LENGTH_SHORT).show();
+                }
+            }
+            });
     }
 }

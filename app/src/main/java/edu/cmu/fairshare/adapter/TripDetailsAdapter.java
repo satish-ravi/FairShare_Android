@@ -7,21 +7,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.widget.ProfilePictureView;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import edu.cmu.fairshare.R;
-import edu.cmu.fairshare.model.Trip;
-import edu.cmu.fairshare.model.User;
+import edu.cmu.fairshare.model.TripUser;
 
 /**
  * Created by dil on 7/29/14.
  */
-public class TripDetailsAdapter extends ArrayAdapter<User> {
+public class TripDetailsAdapter extends ArrayAdapter<TripUser> {
     private Activity context;
-    private ArrayList<User> tripList;
+    private ArrayList<TripUser> tripList;
     private ArrayList<Integer> selectedItemArray;
 
     public ArrayList<Integer> getSelectedItemArray() {
@@ -32,7 +33,7 @@ public class TripDetailsAdapter extends ArrayAdapter<User> {
         this.selectedItemArray = selectedItemArray;
     }
 
-    public TripDetailsAdapter(Activity context, ArrayList<User> tripList) {
+    public TripDetailsAdapter(Activity context, ArrayList<TripUser> tripList) {
         super(context, R.layout.activity_view_trip,tripList);
         this.context = context;
         this.tripList = tripList;
@@ -44,13 +45,13 @@ public class TripDetailsAdapter extends ArrayAdapter<User> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View view = null;
         if (convertView == null) {
-            LayoutInflater inflator = context.getLayoutInflater();
-            view = inflator.inflate(R.layout.trip_details_items, null);
+            LayoutInflater inflater = context.getLayoutInflater();
+            view = inflater.inflate(R.layout.trip_details_items, null);
             final ViewHolder viewHolder = new ViewHolder();
-            viewHolder.profilePic = (ImageView) view.findViewById(R.id.user_pic_id);
+            viewHolder.profilePic = (ProfilePictureView) view.findViewById(R.id.user_pic_id);
             viewHolder.userText = (TextView) view.findViewById(R.id.user_name_id);
             viewHolder.startLocationText = (TextView) view.findViewById(R.id.start_id);
             viewHolder.endLocationText = (TextView) view.findViewById(R.id.stop_id);
@@ -63,11 +64,12 @@ public class TripDetailsAdapter extends ArrayAdapter<User> {
             ((ViewHolder) view.getTag()).userText.setTag(tripList.get(position));
         }
         ViewHolder holder = (ViewHolder) view.getTag();
-        holder.userText.setText(tripList.get(position).getUserName());
+        holder.userText.setText(tripList.get(position).getName());
         holder.startLocationText.setText(tripList.get(position).getStartLocation());
-        holder.endLocationText.setText(tripList.get(position).getDropLocation());
-        holder.costText.setText("$"+Double.toString(tripList.get(position).getCost()));
-        holder.distanceText.setText(Double.toString(tripList.get(position).getDistance())+"miles");
+        holder.endLocationText.setText(tripList.get(position).getEndLocation());
+        holder.costText.setText("$"+decimalFormatter(tripList.get(position).getCost()));
+        holder.distanceText.setText(decimalFormatter(tripList.get(position).getDistance() / 1609.344) + " miles");
+        holder.profilePic.setProfileId(tripList.get(position).getCommuterId());
         if(selectedItemArray!=null && selectedItemArray.size()>0 && selectedItemArray.get(position)==1){
             view.setBackgroundResource(R.drawable.green_gradiant);
         }else{
@@ -76,10 +78,13 @@ public class TripDetailsAdapter extends ArrayAdapter<User> {
         return view;
     }
 
-
+    public String decimalFormatter(double value){
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        return decimalFormat.format(value);
+    }
 
     static class ViewHolder {
-        protected ImageView profilePic;
+        protected ProfilePictureView profilePic;
         protected TextView userText;
         protected TextView startLocationText;
         protected TextView endLocationText;

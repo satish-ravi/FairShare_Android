@@ -1,28 +1,26 @@
 package edu.cmu.fairshare.adapter;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
-
+import com.facebook.widget.ProfilePictureView;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-
 import edu.cmu.fairshare.R;
-import edu.cmu.fairshare.model.User;
+import edu.cmu.fairshare.model.TripUser;
 
 /**
  * Created by dil on 7/30/14.
  */
 public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
     private Activity context;
-    private ArrayList<User> tripList;
+    private ArrayList<TripUser> tripList;
 
-    public TripDetailsEditAdapter(Activity context, ArrayList<User> tripList){
+    public TripDetailsEditAdapter(Activity context, ArrayList<TripUser> tripList){
         this.context = context;
         this.tripList = tripList;
     }
@@ -69,7 +67,7 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
             LayoutInflater inflater = context.getLayoutInflater();
             view = inflater.inflate(R.layout.trip_details_items, null);
             final ViewHolder viewHolder = new ViewHolder();
-            viewHolder.profilePic = (ImageView) view.findViewById(R.id.user_pic_id);
+            viewHolder.profilePic = (ProfilePictureView) view.findViewById(R.id.user_pic_id);
             viewHolder.userText = (TextView) view.findViewById(R.id.user_name_id);
             viewHolder.startLocationText = (TextView) view.findViewById(R.id.start_id);
             viewHolder.endLocationText = (TextView) view.findViewById(R.id.stop_id);
@@ -82,11 +80,12 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
             ((ViewHolder) view.getTag()).userText.setTag(tripList.get(groupPosition));
         }
         ViewHolder holder = (ViewHolder) view.getTag();
-        holder.userText.setText(tripList.get(groupPosition).getUserName());
+        holder.userText.setText(tripList.get(groupPosition).getName());
         holder.startLocationText.setText(tripList.get(groupPosition).getStartLocation());
-        holder.endLocationText.setText(tripList.get(groupPosition).getDropLocation());
-        holder.costText.setText("$"+Double.toString(tripList.get(groupPosition).getCost()));
-        holder.distanceText.setText(Double.toString(tripList.get(groupPosition).getDistance())+"miles");
+        holder.endLocationText.setText(tripList.get(groupPosition).getEndLocation());
+        holder.costText.setText("$"+decimalFormatter(tripList.get(groupPosition).getCost()));
+        holder.profilePic.setProfileId(tripList.get(groupPosition).getCommuterId());
+        holder.distanceText.setText(decimalFormatter(tripList.get(groupPosition).getDistance()/1609.344)+" miles");
         return view;
     }
 
@@ -107,6 +106,10 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
         }
         return view;
     }
+    public String decimalFormatter(double value){
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        return decimalFormat.format(value);
+    }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
@@ -114,7 +117,7 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
     }
 
     static class ViewHolder {
-        protected ImageView profilePic;
+        protected ProfilePictureView profilePic;
         protected TextView userText;
         protected TextView startLocationText;
         protected TextView endLocationText;

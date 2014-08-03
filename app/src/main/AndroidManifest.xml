@@ -37,7 +37,7 @@
         </activity>
         <activity
             android:name=".activity.TripDetails"
-            android:label="@string/title_activity_trip_details"
+            android:label="@string/app_name"
             android:parentActivityName=".activity.ViewTripActivity">
 
             <meta-data
@@ -47,7 +47,7 @@
         </activity>
         <activity
             android:name=".activity.TripDetailsEditActivity"
-            android:label="@string/title_activity_trip_details_edit"
+            android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan">
         </activity>
     </application>

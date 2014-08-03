@@ -1,40 +1,39 @@
 package edu.cmu.fairshare.activity;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.facebook.Session;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
-
 import java.util.ArrayList;
-import java.util.List;
-
+import java.util.HashMap;
 import edu.cmu.fairshare.R;
 import edu.cmu.fairshare.adapter.ViewTripAdapter;
 import edu.cmu.fairshare.model.Trip;
 
 public class ViewTripActivity extends ListActivity {
     Session session;
+    ViewTripAdapter tripArrayAdapter;
+    ArrayList<Trip> trips;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_view_trip);
         session = ParseFacebookUtils.getSession();
         if (session != null && session.isOpened()) {
-            ViewTripAdapter tripArrayAdapter = new ViewTripAdapter(this);
+            trips = new ArrayList<Trip>();
+            getTripData();
+            tripArrayAdapter = new ViewTripAdapter(this,trips);
             setListAdapter(tripArrayAdapter);
         }
     }
@@ -61,7 +60,7 @@ public class ViewTripActivity extends ListActivity {
             return true;
         }
         if(id==R.id.action_logout){
-            ParseUser.getCurrentUser().logOut();
+            ParseUser.logOut();
             Intent intent = new Intent(this, MyActivity.class);
             startActivity(intent);
         }
@@ -70,11 +69,11 @@ public class ViewTripActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        ParseObject item = (ParseObject) getListAdapter().getItem(position);
+        Trip item = (Trip) getListAdapter().getItem(position);
         Intent intent = new Intent(this, TripDetails.class);
         intent.putExtra("tripID", item.getObjectId());
+        intent.putExtra("tripName",item.getTripName());
         startActivity(intent);
-        Toast.makeText(this, item.getObjectId() + " selected", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -85,5 +84,21 @@ public class ViewTripActivity extends ListActivity {
             setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(setIntent);
         }
+    }
+
+    public void getTripData(){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("userId", ParseUser.getCurrentUser().get("fbId"));
+        ParseCloud.callFunctionInBackground("getTripByUser", params, new FunctionCallback<ArrayList<Trip>>() {
+            public void done(ArrayList<Trip> result, ParseException e) {
+                if (e == null) {
+                    trips.addAll(result);
+                    tripArrayAdapter.notifyDataSetChanged();
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "Error retrieve data", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

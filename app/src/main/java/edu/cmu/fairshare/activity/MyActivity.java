@@ -6,10 +6,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+
 
 import com.facebook.Request;
 import com.facebook.Response;
@@ -17,12 +16,14 @@ import com.facebook.model.GraphUser;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.ParseException;
 import java.util.Arrays;
 import java.util.List;
-
 import edu.cmu.fairshare.R;
+import edu.cmu.fairshare.model.Trip;
+import edu.cmu.fairshare.model.TripUser;
 
 
 public class MyActivity extends Activity {
@@ -33,6 +34,8 @@ public class MyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+        ParseObject.registerSubclass(Trip.class);
+        ParseObject.registerSubclass(TripUser.class);
         Parse.initialize(this, "8670VmAcvjt4wvLbpEQWTWviW8WIpDNePGUdCvUA", "vTGi3cFFJDjK0Glbx2Z4Z8B5SHlG2MiczHShlo04");
         ParseFacebookUtils.initialize(getString(R.string.appID));
         ParseUser currentUser = ParseUser.getCurrentUser();

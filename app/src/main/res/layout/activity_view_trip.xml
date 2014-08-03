@@ -13,18 +13,18 @@
         android:text="@string/app_name"
         android:paddingLeft="10dp"
         android:paddingTop="5dp"
-        android:paddingBottom="25dp"
+        android:paddingBottom="35dp"
         android:layout_alignParentLeft="true"/>
 
     <TextView
-            android:id="@+id/trip_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="15dp"
-            android:text="@string/app_name"
-            android:paddingRight="15dp"
-            android:paddingTop="25dp"
-            android:layout_alignParentRight="true"/>
+        android:id="@+id/trip_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:text="@string/app_name"
+        android:paddingRight="15dp"
+        android:paddingTop="25dp"
+        android:layout_alignParentRight="true"/>
 
     <TextView
         android:id="@+id/trip_location"
@@ -34,6 +34,7 @@
         android:text="@string/app_name"
         android:layout_alignBottom="@+id/trip_label"
         android:paddingLeft="10dp"
+        android:paddingTop="25dp"
         android:textColor="@android:color/secondary_text_dark"
         android:layout_alignParentLeft="true"/>
 </RelativeLayout>

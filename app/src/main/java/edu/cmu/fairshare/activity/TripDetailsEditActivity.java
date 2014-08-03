@@ -1,32 +1,48 @@
 package edu.cmu.fairshare.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.cmu.fairshare.R;
 import edu.cmu.fairshare.adapter.TripDetailsEditAdapter;
+import edu.cmu.fairshare.model.TripUser;
 import edu.cmu.fairshare.model.User;
 
 public class TripDetailsEditActivity extends Activity {
-    private Activity context;
-    private ArrayList<User> tripList;
+    TripDetailsEditAdapter tripExpandableListAdapter;
+    ArrayList<TripUser> tripUsersList;
+    String trip;
+    String tripName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_details_edit);
+        TextView labelTextView = (TextView) findViewById(R.id.trip_label);
         ExpandableListView tripExpandableListView = (ExpandableListView)findViewById(R.id.expandable_list_id);
-        ExpandableListAdapter tripExpandableListAdapter = new TripDetailsEditAdapter(this,getModel());
+        tripUsersList = new ArrayList<TripUser>();
+        Intent intent = getIntent();
+        trip = (String)intent.getSerializableExtra("tripID");
+        tripName = (String) intent.getSerializableExtra("tripName");
+        labelTextView.setText(tripName);
+        getTripUserData(trip);
+        tripExpandableListAdapter = new TripDetailsEditAdapter(this,tripUsersList);
         tripExpandableListView.setAdapter(tripExpandableListAdapter);
         tripExpandableListView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
     }
@@ -51,31 +67,22 @@ public class TripDetailsEditActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private ArrayList<User> getModel() {
-        ArrayList<User> list = new ArrayList<User>();
-        list.add(get("user 1", "location1", "location_1", 150, 23));
-        list.add(get("user 2", "location2", "location_2", 20, 2.3));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("user 1", "location1", "location_1", 150, 23));
-        list.add(get("user 2", "location2", "location_2", 20, 2.3));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("user 1", "location1", "location_1", 150, 23));
-        list.add(get("user 2", "location2", "location_2", 20, 2.3));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-
-        return list;
-    }
-
-    private User get(String userName, String startLocation, String dropLocation, double cost, double distance) {
-        User user = new User();
-        user.setUserName(userName);
-        user.setStartLocation(startLocation);
-        user.setDropLocation(dropLocation);
-        user.setCost(cost);
-        user.setDistance(distance);
-        return user;
+    private void getTripUserData(String tripId){
+        ParseQuery<TripUser> query = ParseQuery.getQuery("TripUser");
+        ParseObject object = ParseObject.create("Trip");
+        object.setObjectId(tripId);
+        query.whereEqualTo("tripId",object);
+        query.findInBackground(new FindCallback<TripUser>() {
+            public void done(List<TripUser> usersList, ParseException e) {
+                if (e == null) {
+                    Log.i("Inside", String.valueOf(usersList.size()));
+                    tripUsersList.addAll(usersList);
+                    tripExpandableListAdapter.notifyDataSetChanged();
+                } else {
+                    Log.i("Error", e.toString());
+                    Toast.makeText(getApplicationContext(), "Error Retrieving data", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }
