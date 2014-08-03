@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    >
 
     <TextView android:id="@+id/rowTextView"
         android:layout_width="wrap_content"
@@ -22,6 +23,9 @@
     <ImageView
         android:layout_width="@dimen/com_facebook_usersettingsfragment_profile_picture_width"
         android:layout_height="@dimen/com_facebook_usersettingsfragment_profile_picture_height"
-        android:id ="@+id/com_facebook_picker_profile_pic_stub"/>
+        android:id ="@+id/com_facebook_picker_profile_pic_stub"
+        android:layout_below="@+id/rowTextView"
+        android:layout_toRightOf="@+id/rowTextView"
+        android:layout_toEndOf="@+id/rowTextView" />
 
 </RelativeLayout>

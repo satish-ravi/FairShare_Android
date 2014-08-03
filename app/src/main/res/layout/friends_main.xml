@@ -2,11 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:weightSum="1">
 
-    <ListView android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/mainListView">
+    <ListView android:layout_width="wrap_content"
+        android:layout_height="362dp"
+        android:id="@+id/mainListView"
+        android:layout_weight="0.65">
     </ListView>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Done"
+        android:id="@+id/button"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>

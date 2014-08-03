@@ -66,7 +66,7 @@ public class TripDetailsEditActivity extends Activity {
         list.add(get("trip 1", "location1", "location_1", 150, 23));
         list.add(get("trip 1", "location1", "location_1", 150, 23));
 
-        return list;
+        return TripDetails.list;
     }
 
     private User get(String userName, String startLocation, String dropLocation, double cost, double distance) {

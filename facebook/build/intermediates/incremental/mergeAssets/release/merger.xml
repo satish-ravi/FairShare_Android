@@ -2,10 +2,10 @@
 <merger version="2" >
 
     <dataSet config="main" >
-        <source path="C:\MSIT-CMU\MobileApp-08723\Project\Latest\FairShare\facebook\src\main\assets" />
+        <source path="C:\Users\Seecha\Documents\GitHub\FairShare_Android\facebook\src\main\assets" />
     </dataSet>
     <dataSet config="release" >
-        <source path="C:\MSIT-CMU\MobileApp-08723\Project\Latest\FairShare\facebook\src\release\assets" />
+        <source path="C:\Users\Seecha\Documents\GitHub\FairShare_Android\facebook\src\release\assets" />
     </dataSet>
 
 </merger>

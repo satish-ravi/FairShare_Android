@@ -32,6 +32,8 @@ public class TripDetails extends Activity {
     Session session;
     int itemPosition;
     TripDetailsAdapter userArrayAdapter;
+    public static String tripName;
+    public static ArrayList<User> list = new ArrayList<User>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,19 +87,8 @@ public class TripDetails extends Activity {
     }
 
     private ArrayList<User> getModel() {
-        ArrayList<User> list = new ArrayList<User>();
-        list.add(get("user 1", "location1", "location_1", 150, 23));
-        list.add(get("user 2", "location2", "location_2", 20, 2.3));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("user 1", "location1", "location_1", 150, 23));
-        list.add(get("user 2", "location2", "location_2", 20, 2.3));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("user 1", "location1", "location_1", 150, 23));
-        list.add(get("user 2", "location2", "location_2", 20, 2.3));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
-        list.add(get("trip 1", "location1", "location_1", 150, 23));
+
+
 
         return list;
     }

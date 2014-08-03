@@ -8,6 +8,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -28,6 +29,7 @@ import com.facebook.model.GraphUser;
 import com.parse.ParseFacebookUtils;
 
 import edu.cmu.fairshare.R;
+import edu.cmu.fairshare.model.User;
 
 public class ViewFriendsActivity extends Activity {
 
@@ -224,6 +226,7 @@ public class ViewFriendsActivity extends Activity {
     }
     public static Bitmap getFacebookProfilePicture(String userID){
         Bitmap bitmap = null;
+
         try {
             URL imageURL = new URL("https://graph.facebook.com/" + userID + "/picture?type=small");
             bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
@@ -233,5 +236,21 @@ public class ViewFriendsActivity extends Activity {
         }
 
         return bitmap;
+    }
+
+    public void onDone(View v) {
+        CheckBox cb;
+        int count = mainListView.getAdapter().getCount();
+        User newUser = new User();
+        for(int i =0; i< count;i++) {
+            cb = (CheckBox) mainListView.getChildAt(i).findViewById(R.id.CheckBox01);
+            if(cb.isChecked()) {
+                newUser.setUserName( mainListView.getChildAt(i).findViewById(R.id.rowTextView).toString());
+                TripDetails.list.add(newUser);
+            }
+        }
+
+        Intent intent = new Intent(this , TripDetails.class);
+        startActivity(intent);
     }
 }
