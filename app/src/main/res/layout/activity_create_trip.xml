@@ -37,6 +37,7 @@
         android:textStyle="bold"
         android:gravity="center"
         android:textColor="#fff"
+        android:onClick="chooseFriends"
         android:background="@drawable/button_login"
         android:text="@string/select_friends"/>
 </RelativeLayout>

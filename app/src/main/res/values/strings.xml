@@ -19,4 +19,7 @@
     <string name="trip_edit">Edit</string>
     <string name="trip_total">Total</string>
     <string name="trip_done">Done</string>
+    <string name="title_activity_view_friends">ViewFriendsActivity</string>
+    <string name="pick_friends">Pick Friends</string>
+
 </resources>
