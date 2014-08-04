@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.parse.ParseGeoPoint;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -72,6 +73,23 @@ public class LocationService {
     }
 
 
+    public static ParseGeoPoint getLocationFromAddress(Context context,String address) {
+        Geocoder geoCoder = new Geocoder(context, Locale.getDefault());
+        List<Address> addressList = null;
+        double lat=0.0,lng=0.0;
+        try {
+            addressList = geoCoder.getFromLocationName(address, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (addressList != null && addressList.size() > 0) {
+             lat = addressList.get(0).getLatitude();
+             lng = addressList.get(0).getLongitude();
+        }
+        ParseGeoPoint geoPoint = new ParseGeoPoint(lat,lng);
+
+        return geoPoint;
+    }
 
     public static String getCurrentAddress(Context context) {
         String locationText="";
