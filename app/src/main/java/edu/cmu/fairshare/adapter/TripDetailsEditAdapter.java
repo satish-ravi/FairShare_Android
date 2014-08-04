@@ -1,12 +1,17 @@
 package edu.cmu.fairshare.adapter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.facebook.widget.ProfilePictureView;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -16,7 +21,7 @@ import edu.cmu.fairshare.model.TripUser;
 /**
  * Created by dil on 7/30/14.
  */
-public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
+public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements AdapterView.OnItemClickListener {
     private Activity context;
     private ArrayList<TripUser> tripList;
 
@@ -96,10 +101,17 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
             LayoutInflater inflater = context.getLayoutInflater();
             view = inflater.inflate(R.layout.expandable_list_items, null);
             ChildViewHolder viewHolder = new ChildViewHolder();
-            viewHolder.startLocationEdit = (EditText) view.findViewById(R.id.start_loc_id);
-            viewHolder.endLocationEdit = (EditText) view.findViewById(R.id.end_loc_id);
+            viewHolder.startLocationEdit = (AutoCompleteTextView) view.findViewById(R.id.start_loc_id);
+            viewHolder.endLocationEdit = (AutoCompleteTextView) view.findViewById(R.id.end_loc_id);
+            viewHolder.startLocationEdit.setAdapter(new PlacesAutoCompleteAdapter( context, R.layout.list_item));
+            viewHolder.startLocationEdit.setOnItemClickListener(this);
+
+            viewHolder.endLocationEdit.setAdapter(new PlacesAutoCompleteAdapter( context, R.layout.list_item));
+            viewHolder.endLocationEdit.setOnItemClickListener(this);
             view.setTag(viewHolder);
             viewHolder.startLocationEdit.setTag(tripList.get(groupPosition));
+
+
         } else {
             view = convertView;
             ((ChildViewHolder) view.getTag()).startLocationEdit.setTag(tripList.get(groupPosition));
@@ -116,6 +128,12 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
         return false;
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        String str = (String) adapterView.getItemAtPosition(i);
+        //Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+    }
+
     static class ViewHolder {
         protected ProfilePictureView profilePic;
         protected TextView userText;
@@ -126,7 +144,7 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
     }
 
     static class ChildViewHolder {
-        protected EditText startLocationEdit;
-        protected EditText endLocationEdit;
+        protected AutoCompleteTextView startLocationEdit;
+        protected AutoCompleteTextView endLocationEdit;
     }
 }

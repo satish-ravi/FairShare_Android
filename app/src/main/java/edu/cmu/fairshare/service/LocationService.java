@@ -60,8 +60,12 @@ public class LocationService {
 
             }
         };
-
-        manager.requestLocationUpdates(provider, 0L, 0.0F, listener );
+        if(manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0.0F, listener );
+        }
+        else {
+            manager.requestLocationUpdates(provider, 0L, 0.0F, listener);
+        }
         ParseGeoPoint geoPoint = new ParseGeoPoint(latitude,longitude);
 
         return geoPoint;

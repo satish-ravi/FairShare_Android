@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,11 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.cmu.fairshare.R;
+import edu.cmu.fairshare.adapter.PlacesAutoCompleteAdapter;
 import edu.cmu.fairshare.adapter.TripDetailsEditAdapter;
 import edu.cmu.fairshare.model.TripUser;
 import edu.cmu.fairshare.model.User;
 
-public class TripDetailsEditActivity extends Activity {
+public class TripDetailsEditActivity extends Activity  {
     TripDetailsEditAdapter tripExpandableListAdapter;
     ArrayList<TripUser> tripUsersList;
     String trip;
@@ -45,6 +49,8 @@ public class TripDetailsEditActivity extends Activity {
         tripExpandableListAdapter = new TripDetailsEditAdapter(this,tripUsersList);
         tripExpandableListView.setAdapter(tripExpandableListAdapter);
         tripExpandableListView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+
+
     }
 
 
@@ -85,4 +91,6 @@ public class TripDetailsEditActivity extends Activity {
             }
         });
     }
+
+
 }
