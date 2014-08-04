@@ -53,7 +53,7 @@
         </activity>
         <activity
             android:name=".activity.ViewFriendsActivity"
-            android:label="@string/title_activity_view_friends" >
+            android:label="@string/app_name" >
         </activity>
     </application>
 

@@ -1,10 +1,8 @@
 package edu.cmu.fairshare.model;
 
-import com.parse.Parse;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
-
-import java.io.Serializable;
+import com.parse.ParseUser;
 import java.util.Date;
 
 /**
@@ -62,5 +60,9 @@ public class Trip extends ParseObject {
 
     public void setEndLocation(String endLocation) {
         put("endLocation",endLocation);
+    }
+
+    public void setCreatedBy(ParseUser parseUser){
+        put("createdBy", parseUser);
     }
 }

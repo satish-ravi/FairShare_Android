@@ -7,13 +7,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
+import com.parse.ParseUser;
 
 import java.util.List;
 
@@ -42,21 +42,21 @@ public class CreateTripActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        if(id==R.id.action_logout){
+            ParseUser.logOut();
+            Intent intent = new Intent(this, MyActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
 
     public void chooseFriends(View v) {
 
-        TextView newTrip = (TextView) findViewById(R.id.create_new_trip);
+        final EditText newTrip = (EditText) findViewById(R.id.new_trip_name);
         if(newTrip.getText().toString() == null) {
             Toast.makeText(getApplicationContext(), "Please enter trip name", Toast.LENGTH_LONG).show();
         }
         else {
-
-            TripDetails.tripName = newTrip.getText().toString();
             Request request = Request.newMyFriendsRequest(
                     Session.getActiveSession(),
                     new Request.GraphUserListCallback() {
@@ -64,16 +64,17 @@ public class CreateTripActivity extends Activity {
                         @Override
                         public void onCompleted(List<GraphUser> users, Response response) {
                             System.out.println("Users: " + users);
+                            ViewFriendsActivity.app_users.clear();
                             for (int i = 0; i < users.size(); i++) {
                                 ViewFriendsActivity.app_users.add(users.get(i));
                             }
+                            Intent intent = new Intent(getApplicationContext(), ViewFriendsActivity.class);
+                            intent.putExtra("tripName",newTrip.getText().toString());
+                            startActivity(intent);
                         }
                     }
             );
             request.executeAsync();
-
-            Intent intent = new Intent(this, ViewFriendsActivity.class);
-            startActivity(intent);
         }
 
     }

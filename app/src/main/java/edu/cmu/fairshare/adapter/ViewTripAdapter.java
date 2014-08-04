@@ -23,7 +23,7 @@ public class ViewTripAdapter extends ArrayAdapter<Trip> {
     private ArrayList<Trip> tripList;
 
     public ViewTripAdapter(Activity context, ArrayList<Trip> tripList) {
-        super(context, R.layout.activity_view_trip,tripList);
+        super(context, R.layout.view_trip_items,tripList);
         this.context = context;
         this.tripList = tripList;
     }
@@ -33,7 +33,7 @@ public class ViewTripAdapter extends ArrayAdapter<Trip> {
         View view = null;
         if (convertView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
-            view = inflater.inflate(R.layout.activity_view_trip, null);
+            view = inflater.inflate(R.layout.view_trip_items, null);
             final ViewHolder viewHolder = new ViewHolder();
             viewHolder.labelText = (TextView) view.findViewById(R.id.trip_label);
             viewHolder.dateText = (TextView) view.findViewById(R.id.trip_date);

@@ -9,6 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp"
+        android:layout_toRightOf="@+id/com_facebook_picker_profile_pic_stub"
         android:textSize="16sp" >
     </TextView>
 
@@ -20,12 +21,10 @@
         android:focusable="false"
         android:checked="false">
     </CheckBox>
-    <ImageView
+    <com.facebook.widget.ProfilePictureView
         android:layout_width="@dimen/com_facebook_usersettingsfragment_profile_picture_width"
         android:layout_height="@dimen/com_facebook_usersettingsfragment_profile_picture_height"
         android:id ="@+id/com_facebook_picker_profile_pic_stub"
-        android:layout_below="@+id/rowTextView"
-        android:layout_toRightOf="@+id/rowTextView"
-        android:layout_toEndOf="@+id/rowTextView" />
+        android:layout_alignParentLeft="true" />
 
 </RelativeLayout>

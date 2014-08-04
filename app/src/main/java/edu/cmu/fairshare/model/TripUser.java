@@ -101,4 +101,12 @@ public class TripUser extends ParseObject {
     public void setPicture(ParseFile picture){
          put("picture", picture);
     }
+
+    public Trip getTrip(){
+        return (Trip)getParseObject("tripId");
+    }
+
+    public void setTrip(Trip trip){
+        put("tripId", trip);
+    }
 }
