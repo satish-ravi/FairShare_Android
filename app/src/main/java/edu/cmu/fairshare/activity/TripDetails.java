@@ -1,7 +1,14 @@
 package edu.cmu.fairshare.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,15 +24,19 @@ import com.facebook.Session;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import edu.cmu.fairshare.R;
 import edu.cmu.fairshare.adapter.TripDetailsAdapter;
 import edu.cmu.fairshare.model.TripUser;
+
+import static java.util.Locale.*;
 
 public class TripDetails extends Activity {
     Session session;
@@ -33,6 +44,8 @@ public class TripDetails extends Activity {
     ArrayList<TripUser> tripUsersList;
     String trip;
     String tripName;
+    double latitude, longitude;
+    String locationText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,5 +129,75 @@ public class TripDetails extends Activity {
                 }
             }
             });
+    }
+
+    public ParseGeoPoint getCurrentLocation() {
+
+        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria criteria = new Criteria();
+
+
+        String provider = manager.getBestProvider(criteria, true);
+
+        LocationListener listener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+                longitude = location.getLongitude();
+                latitude = location.getLatitude();
+
+
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+            }
+        };
+
+        manager.requestLocationUpdates(provider, 0L, 0.0F, listener );
+        ParseGeoPoint geoPoint = new ParseGeoPoint(latitude,longitude);
+
+        return geoPoint;
+    }
+
+    public String getCurrentAddress() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            Geocoder gc = new Geocoder(TripDetails.this, Locale.getDefault());
+            List<Address> addresses = gc.getFromLocation(latitude, longitude, 1);
+
+
+
+
+            if (addresses.size() > 0) {
+                Address address = addresses.get(0);
+
+                for(int i=0;i<address.getMaxAddressLineIndex();i++)
+                    sb.append(address.getAddressLine(i));
+
+                locationText = sb.toString();
+
+
+
+            }
+        } catch (Exception e) {
+            Toast.makeText(
+                    TripDetails.this,
+                    "Unable to retrieve the current location address, please try again later.",
+                    Toast.LENGTH_SHORT).show();
+        }
+        return locationText;
     }
 }

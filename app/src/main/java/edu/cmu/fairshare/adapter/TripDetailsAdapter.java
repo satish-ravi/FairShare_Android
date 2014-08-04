@@ -15,7 +15,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import edu.cmu.fairshare.R;
+import edu.cmu.fairshare.activity.TripDetails;
 import edu.cmu.fairshare.model.TripUser;
+import edu.cmu.fairshare.service.LocationService;
 
 /**
  * Created by dil on 7/29/14.
@@ -24,14 +26,6 @@ public class TripDetailsAdapter extends ArrayAdapter<TripUser> {
     private Activity context;
     private ArrayList<TripUser> tripList;
     private ArrayList<Integer> selectedItemArray;
-
-    public ArrayList<Integer> getSelectedItemArray() {
-        return selectedItemArray;
-    }
-
-    public void setSelectedItemArray(ArrayList<Integer> selectedItemArray) {
-        this.selectedItemArray = selectedItemArray;
-    }
 
     public TripDetailsAdapter(Activity context, ArrayList<TripUser> tripList) {
         super(context, R.layout.activity_view_trip,tripList);
@@ -44,9 +38,18 @@ public class TripDetailsAdapter extends ArrayAdapter<TripUser> {
         }
     }
 
+    public ArrayList<Integer> getSelectedItemArray() {
+        return selectedItemArray;
+    }
+
+    public void setSelectedItemArray(ArrayList<Integer> selectedItemArray) {
+        this.selectedItemArray = selectedItemArray;
+    }
+
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         View view = null;
+        TripDetails trip = new TripDetails();
         if (convertView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
             view = inflater.inflate(R.layout.trip_details_items, null);
@@ -70,14 +73,33 @@ public class TripDetailsAdapter extends ArrayAdapter<TripUser> {
         holder.costText.setText("$"+decimalFormatter(tripList.get(position).getCost()));
         holder.distanceText.setText(decimalFormatter(tripList.get(position).getDistance() / 1609.344) + " miles");
         holder.profilePic.setProfileId(tripList.get(position).getCommuterId());
-        if(selectedItemArray!=null && selectedItemArray.size()>0 && selectedItemArray.get(position)==1){
+        if(tripList.get(position).getStartLocation()!=null && tripList.get(position).getEndLocation()==null) {
+            selectedItemArray.set(position, 1);
+        }
+
+        if((selectedItemArray!=null && selectedItemArray.size()>0 && selectedItemArray.get(position)==1)   ){
             view.setBackgroundResource(R.drawable.green_gradiant);
-        }else{
+                if(tripList.get(position).getStartLocation()==null) {
+                    tripList.get(position).setStartLocGeo(LocationService.getCurrentLocation(context));
+                    tripList.get(position).setStartLocation(LocationService.getCurrentAddress(context));
+                    tripList.get(position).saveInBackground();
+
+                }
+
+                  }
+        else{
+
+
             view.setBackgroundColor(Color.TRANSPARENT);
+            if(tripList.get(position).getStartLocation()!=null && tripList.get(position).getEndLocation()==null ) {
+                tripList.get(position).setEndLocGeo(LocationService.getCurrentLocation(this.getContext()));
+                tripList.get(position).setEndLocation(LocationService.getCurrentAddress(this.getContext()));
+                tripList.get(position).saveInBackground();
+            }
+
         }
         return view;
     }
-
     public String decimalFormatter(double value){
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         return decimalFormat.format(value);
