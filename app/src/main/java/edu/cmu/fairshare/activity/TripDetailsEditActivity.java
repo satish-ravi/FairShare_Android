@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
@@ -22,6 +25,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.cmu.fairshare.R;
@@ -32,9 +36,11 @@ import edu.cmu.fairshare.model.TripUser;
 public class TripDetailsEditActivity extends Activity {
     TripDetailsEditAdapter tripExpandableListAdapter;
     ArrayList<TripUser> tripUsersList;
+    HashMap<TripUser, ArrayList<String>> tripStringArrayListHashMap;
     String trip;
     String tripName;
     private Trip currentTrip;
+    View view = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +49,30 @@ public class TripDetailsEditActivity extends Activity {
         TextView labelTextView = (TextView) findViewById(R.id.trip_label);
         ExpandableListView tripExpandableListView = (ExpandableListView)findViewById(R.id.expandable_list_id);
         tripUsersList = new ArrayList<TripUser>();
+        tripStringArrayListHashMap = new HashMap<TripUser, ArrayList<String>>();
         Intent intent = getIntent();
         trip = (String)intent.getSerializableExtra("tripID");
         tripName = (String) intent.getSerializableExtra("tripName");
         labelTextView.setText(tripName);
         getTripUserData(trip);
-        tripExpandableListAdapter = new TripDetailsEditAdapter(this,tripUsersList);
+        tripExpandableListAdapter = new TripDetailsEditAdapter(this,tripUsersList, tripStringArrayListHashMap);
         tripExpandableListView.setAdapter(tripExpandableListAdapter);
         tripExpandableListView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+        tripExpandableListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            }
+        });
+        tripExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+//                if(tripExpandableListAdapter.selectedList.get(groupPosition)==0)
+                    tripExpandableListAdapter.selectedList.set(groupPosition,1);
+//                else
+//                    tripExpandableListAdapter.selectedList.set(groupPosition,0);
+                return false;
+            }
+        });
     }
 
 
@@ -106,6 +128,8 @@ public class TripDetailsEditActivity extends Activity {
     }
 
     private void getTripUserData(String tripId){
+        final ArrayList<String> editTextList = new ArrayList<String>();
+        editTextList.add("1");
         ParseQuery<TripUser> query = ParseQuery.getQuery("TripUser");
         ParseObject object = ParseObject.create("Trip");
         object.setObjectId(tripId);
@@ -113,7 +137,16 @@ public class TripDetailsEditActivity extends Activity {
         query.findInBackground(new FindCallback<TripUser>() {
             public void done(List<TripUser> usersList, ParseException e) {
                 if (e == null) {
+                    LayoutInflater inflater = getLayoutInflater();
+                    view = inflater.inflate(R.layout.expandable_list_items, null);
+                    EditText startText = (EditText)view.findViewById(R.id.start_loc_id);
+                    Log.i("Text", startText.toString());
                     Log.i("Inside", String.valueOf(usersList.size()));
+                    for (int i = 0; i<usersList.size();i++){
+                        tripStringArrayListHashMap.put(usersList.get(i),editTextList);
+                        tripExpandableListAdapter.selectedList.add(0);
+                        tripExpandableListAdapter.editTextStartList.add(startText);
+                    }
                     tripUsersList.addAll(usersList);
                     tripExpandableListAdapter.notifyDataSetChanged();
                 } else {

@@ -48,8 +48,6 @@
             android:name=".activity.TripDetailsEditActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan">
-            android:label="@string/title_activity_trip_details_edit"
-            android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
             android:name=".activity.ViewFriendsActivity"

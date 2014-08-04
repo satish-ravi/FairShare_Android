@@ -1,6 +1,9 @@
 package edu.cmu.fairshare.adapter;
 
 import android.app.Activity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,19 +13,26 @@ import android.widget.TextView;
 import com.facebook.widget.ProfilePictureView;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import edu.cmu.fairshare.R;
 import edu.cmu.fairshare.model.TripUser;
 
 /**
  * Created by dil on 7/30/14.
  */
-public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
+public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements TextWatcher {
     private Activity context;
     private ArrayList<TripUser> tripList;
+    private HashMap<TripUser, ArrayList<String>> tripMap;
+    public ArrayList<EditText> editTextStartList = new ArrayList<EditText>();
+    public ArrayList<EditText> editTextEndList = new ArrayList<EditText>();
+    public ArrayList<Integer> selectedList = new ArrayList<Integer>();
 
-    public TripDetailsEditAdapter(Activity context, ArrayList<TripUser> tripList){
+    public TripDetailsEditAdapter(Activity context, ArrayList<TripUser> tripList, HashMap<TripUser, ArrayList<String>> tripMap){
         this.context = context;
         this.tripList = tripList;
+        this.tripMap = tripMap;
     }
 
     @Override
@@ -32,17 +42,19 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 1;
+        return this.tripMap.get(this.tripList.get(groupPosition))
+                .size();
+    }
+
+    @Override
+    public Object getChild(int groupPosition, int childPosititon) {
+        return this.tripMap.get(this.tripList.get(groupPosition))
+                .get(childPosititon);
     }
 
     @Override
     public Object getGroup(int groupPosition) {
         return tripList.get(groupPosition);
-    }
-
-    @Override
-    public Object getChild(int groupPosition, int childPosition) {
-        return null;
     }
 
     @Override
@@ -52,7 +64,7 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return childPosition;
+        return groupPosition+childPosition;
     }
 
     @Override
@@ -92,18 +104,20 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         View view = null;
-        if (convertView == null) {
+//        if (convertView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
             view = inflater.inflate(R.layout.expandable_list_items, null);
             ChildViewHolder viewHolder = new ChildViewHolder();
-            viewHolder.startLocationEdit = (EditText) view.findViewById(R.id.start_loc_id);
-            viewHolder.endLocationEdit = (EditText) view.findViewById(R.id.end_loc_id);
+            viewHolder.startLocationEdit = editTextStartList.get(groupPosition);
+            viewHolder.startLocationEdit.addTextChangedListener(this);
             view.setTag(viewHolder);
             viewHolder.startLocationEdit.setTag(tripList.get(groupPosition));
-        } else {
-            view = convertView;
-            ((ChildViewHolder) view.getTag()).startLocationEdit.setTag(tripList.get(groupPosition));
-        }
+//            Log.i("group", String.valueOf(groupPosition));
+//        } else {
+//            view = convertView;
+//            ((ChildViewHolder) view.getTag()).startLocationEdit.setTag(tripList.get(groupPosition));
+//        }
+        Log.i("group", String.valueOf(groupPosition));
         return view;
     }
     public String decimalFormatter(double value){
@@ -114,6 +128,21 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return false;
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 
     static class ViewHolder {

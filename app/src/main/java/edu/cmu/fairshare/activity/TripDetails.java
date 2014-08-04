@@ -39,6 +39,7 @@ public class TripDetails extends Activity {
     Trip currentTrip;
     String trip;
     String tripName;
+    Menu menu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +75,7 @@ public class TripDetails extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.trip_details, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -96,12 +98,10 @@ public class TripDetails extends Activity {
         }
         if (id==R.id.total){
             if (isLocationsUpdated()) {
+                setVisible(true);
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
                 alert.setTitle("Total");
                 alert.setMessage("Enter The Trip amount");
-
-// Set an EditText view to get user input
                 final EditText input = new EditText(this);
                 input.setSingleLine();
                 input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -110,13 +110,11 @@ public class TripDetails extends Activity {
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         int value = Integer.parseInt(input.getText().toString());
-                        // Do something with value!
                     }
                 });
 
                 alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        // Canceled.
                     }
                 });
 
@@ -127,6 +125,18 @@ public class TripDetails extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+//
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        MenuItem menuItem = menu.findItem(R.id.total);
+//        if(isLocationsUpdated()) {
+//            menuItem.setVisible(true);
+//        } else {
+//            menuItem.setVisible(false);
+//        }
+//        return super.onPrepareOptionsMenu(menu);
+//
+//    }
 
     @Override
     public void onBackPressed() {
