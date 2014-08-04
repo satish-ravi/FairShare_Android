@@ -78,12 +78,20 @@ public class TripDetailsEditActivity extends Activity  {
         ParseObject object = ParseObject.create("Trip");
         object.setObjectId(tripId);
         query.whereEqualTo("tripId",object);
+
         query.findInBackground(new FindCallback<TripUser>() {
             public void done(List<TripUser> usersList, ParseException e) {
                 if (e == null) {
                     Log.i("Inside", String.valueOf(usersList.size()));
                     tripUsersList.addAll(usersList);
                     tripExpandableListAdapter.notifyDataSetChanged();
+                    for(int i = 0; i<tripUsersList.size();i++){
+
+                        TripDetailsEditAdapter.start.add("");
+                        TripDetailsEditAdapter.end.add("");
+
+                    }
+
                 } else {
                     Log.i("Error", e.toString());
                     Toast.makeText(getApplicationContext(), "Error Retrieving data", Toast.LENGTH_SHORT).show();

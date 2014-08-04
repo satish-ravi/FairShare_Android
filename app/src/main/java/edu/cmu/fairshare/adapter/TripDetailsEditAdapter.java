@@ -13,10 +13,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.widget.ProfilePictureView;
+import com.parse.ParseException;
+import com.parse.SaveCallback;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import edu.cmu.fairshare.R;
 import edu.cmu.fairshare.model.TripUser;
+import edu.cmu.fairshare.service.LocationService;
 
 /**
  * Created by dil on 7/30/14.
@@ -25,10 +29,16 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
     private Activity context;
     private ArrayList<TripUser> tripList;
 
+    public static ArrayList<String> start= new ArrayList<String>();
+    public static ArrayList<String> end=new ArrayList<String>();
+    int pos=0;
+
     public TripDetailsEditAdapter(Activity context, ArrayList<TripUser> tripList){
         this.context = context;
         this.tripList = tripList;
+
     }
+
 
     @Override
     public int getGroupCount() {
@@ -37,7 +47,7 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -57,7 +67,7 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return childPosition;
+        return groupPosition;
     }
 
     @Override
@@ -68,6 +78,8 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         View view = null;
+
+
         if (convertView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
             view = inflater.inflate(R.layout.trip_details_items, null);
@@ -97,25 +109,40 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         View view = null;
-        if (convertView == null) {
+
             LayoutInflater inflater = context.getLayoutInflater();
             view = inflater.inflate(R.layout.expandable_list_items, null);
             ChildViewHolder viewHolder = new ChildViewHolder();
             viewHolder.startLocationEdit = (AutoCompleteTextView) view.findViewById(R.id.start_loc_id);
-            viewHolder.endLocationEdit = (AutoCompleteTextView) view.findViewById(R.id.end_loc_id);
-            viewHolder.startLocationEdit.setAdapter(new PlacesAutoCompleteAdapter( context, R.layout.list_item));
+
+            if(childPosition == 0) {
+                viewHolder.startLocationEdit.setHint("Start Location");
+                viewHolder.startLocationEdit.setText(start.get(groupPosition));
+            }
+        else {
+                viewHolder.startLocationEdit.setHint("End Location");
+                viewHolder.startLocationEdit.setText(end.get(groupPosition));
+            }
+
+
+
+
+            viewHolder.startLocationEdit.setAdapter(new PlacesAutoCompleteAdapter(context, R.layout.list_item));
+
             viewHolder.startLocationEdit.setOnItemClickListener(this);
 
-            viewHolder.endLocationEdit.setAdapter(new PlacesAutoCompleteAdapter( context, R.layout.list_item));
-            viewHolder.endLocationEdit.setOnItemClickListener(this);
+
+
+
+
+
+            pos = groupPosition;
             view.setTag(viewHolder);
             viewHolder.startLocationEdit.setTag(tripList.get(groupPosition));
 
 
-        } else {
-            view = convertView;
-            ((ChildViewHolder) view.getTag()).startLocationEdit.setTag(tripList.get(groupPosition));
-        }
+
+
         return view;
     }
     public String decimalFormatter(double value){
@@ -131,6 +158,14 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String str = (String) adapterView.getItemAtPosition(i);
+
+        if(i==0) {
+            start.set(pos,str);
+        }
+        else {
+            end.set(pos,str);
+        }
+
         //Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
     }
 
@@ -145,6 +180,26 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
 
     static class ChildViewHolder {
         protected AutoCompleteTextView startLocationEdit;
-        protected AutoCompleteTextView endLocationEdit;
+    }
+
+    public void onDone(View v) {
+        for(int i=0; i< getGroupCount();i++) {
+            if(start.get(i)!="") {
+                tripList.get(i).setStartLocation(start.get(i));
+                tripList.get(i).setStartLocGeo(LocationService.getLocationFromAddress(context, start.get(i)));
+            }
+            if(end.get(i)!="") {
+                tripList.get(i).setEndLocation(end.get(i));
+                tripList.get(i).setEndLocGeo(LocationService.getLocationFromAddress(context, end.get(i)));
+            }
+            tripList.get(i).saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    notifyDataSetChanged();
+                }
+            });
+
+        }
+
     }
 }

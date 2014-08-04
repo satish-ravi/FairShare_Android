@@ -73,18 +73,19 @@ public class TripDetailsAdapter extends ArrayAdapter<TripUser> {
         holder.costText.setText("$"+decimalFormatter(tripList.get(position).getCost()));
         holder.distanceText.setText(decimalFormatter(tripList.get(position).getDistance() / 1609.344) + " miles");
         holder.profilePic.setProfileId(tripList.get(position).getCommuterId());
+
         if(tripList.get(position).getStartLocation()!=null && tripList.get(position).getEndLocation()==null) {
             selectedItemArray.set(position, 1);
         }
 
         if((selectedItemArray!=null && selectedItemArray.size()>0 && selectedItemArray.get(position)==1)   ){
             view.setBackgroundResource(R.drawable.green_gradiant);
-                if(tripList.get(position).getStartLocation()==null) {
+
                     tripList.get(position).setStartLocGeo(LocationService.getCurrentLocation(context));
                     tripList.get(position).setStartLocation(LocationService.getCurrentAddress(context));
                     tripList.get(position).saveInBackground();
 
-                }
+
 
                   }
         else{
@@ -98,6 +99,10 @@ public class TripDetailsAdapter extends ArrayAdapter<TripUser> {
             }
 
         }
+        if(tripList.get(position).getStartLocation()!=null && tripList.get(position).getEndLocation()==null) {
+            selectedItemArray.set(position, 1);
+        }
+
         return view;
     }
     public String decimalFormatter(double value){

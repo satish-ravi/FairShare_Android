@@ -5,4 +5,15 @@
         android:title="@string/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item
+        android:id="@+id/total"
+        android:orderInCategory="100"
+        android:title="@string/trip_total"
+        android:showAsAction="always"/>
+
+    <item
+        android:id="@+id/Done"
+        android:orderInCategory="100"
+        android:title="@string/trip_done"
+        android:showAsAction="always"/>
 </menu>
