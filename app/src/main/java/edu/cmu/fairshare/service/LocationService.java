@@ -34,7 +34,6 @@ public class LocationService {
         Criteria criteria = new Criteria();
 
 
-
         String provider = manager.getBestProvider(criteria, true);
 
         LocationListener listener = new LocationListener() {

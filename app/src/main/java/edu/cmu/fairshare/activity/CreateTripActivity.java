@@ -53,7 +53,7 @@ public class CreateTripActivity extends Activity {
     public void chooseFriends(View v) {
 
         final EditText newTrip = (EditText) findViewById(R.id.new_trip_name);
-        if(newTrip.getText().toString() == null) {
+        if(newTrip.getText().toString().trim().equals("")) {
             Toast.makeText(getApplicationContext(), "Please enter trip name", Toast.LENGTH_LONG).show();
         }
         else {

@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.facebook.widget.ProfilePictureView;
+import com.parse.ParseException;
+import com.parse.SaveCallback;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -67,35 +69,33 @@ public class TripDetailsAdapter extends ArrayAdapter<TripUser> {
         }
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.userText.setText(tripList.get(position).getName());
+        if(tripList.get(position).getStartLocation()!=null)
+            holder.startLocationText.setVisibility(View.VISIBLE);
         holder.startLocationText.setText(tripList.get(position).getStartLocation());
+        if (tripList.get(position).getEndLocation()!=null)
+            holder.endLocationText.setVisibility(View.VISIBLE);
         holder.endLocationText.setText(tripList.get(position).getEndLocation());
+        if(tripList.get(position).getCost()>0)
+            holder.costText.setVisibility(View.VISIBLE);
         holder.costText.setText("$"+decimalFormatter(tripList.get(position).getCost()));
+        if(tripList.get(position).getDistance()>0)
+            holder.distanceText.setVisibility(View.VISIBLE);
         holder.distanceText.setText(decimalFormatter(tripList.get(position).getDistance() / 1609.344) + " miles");
         holder.profilePic.setProfileId(tripList.get(position).getCommuterId());
-
-        if(tripList.get(position).getStartLocation()!=null && tripList.get(position).getEndLocation()==null) {
-            selectedItemArray.set(position, 1);
-        }
-
-        if((selectedItemArray!=null && selectedItemArray.size()>0 && selectedItemArray.get(position)==1)   ){
+        if(tripList.get(position).getStartLocation()!=null && tripList.get(position).getEndLocation()==null){
             view.setBackgroundResource(R.drawable.green_gradiant);
-
-                    tripList.get(position).setStartLocGeo(LocationService.getCurrentLocation(context));
-                    tripList.get(position).setStartLocation(LocationService.getCurrentAddress(context));
-                    tripList.get(position).saveInBackground();
-                  }
-        else{
-
-
-            view.setBackgroundColor(Color.TRANSPARENT);
-            if(tripList.get(position).getStartLocation()!=null && tripList.get(position).getEndLocation()==null ) {
-                tripList.get(position).setEndLocGeo(LocationService.getCurrentLocation(this.getContext()));
-                tripList.get(position).setEndLocation(LocationService.getCurrentAddress(this.getContext()));
-                tripList.get(position).saveInBackground();
-            }
-
         }
-
+        else{
+            view.setBackgroundColor(Color.TRANSPARENT);
+        }
+        if(tripList.get(position).getStartLocation()==null){
+            holder.startLocationText.setVisibility(View.VISIBLE);
+            holder.startLocationText.setText("Tap to Start");
+        }
+        else if(tripList.get(position).getEndLocation()==null){
+            holder.endLocationText.setVisibility(View.VISIBLE);
+            holder.endLocationText.setText("Tap to End");
+        }
         return view;
     }
 

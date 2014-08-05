@@ -2,8 +2,15 @@ package edu.cmu.fairshare.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -18,28 +25,40 @@ import android.widget.Toast;
 
 import com.facebook.Session;
 import com.parse.FindCallback;
+import com.parse.LocationCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import edu.cmu.fairshare.R;
 import edu.cmu.fairshare.adapter.TripDetailsAdapter;
 import edu.cmu.fairshare.model.Trip;
 import edu.cmu.fairshare.model.TripUser;
+import edu.cmu.fairshare.service.LocationService;
 
 
 public class TripDetails extends Activity {
     Session session;
     TripDetailsAdapter userArrayAdapter;
     ArrayList<TripUser> tripUsersList;
-    Trip currentTrip;
     String trip;
     String tripName;
+    Trip currentTrip;
+    double latitude, longitude;
+    String locationText;
+    MenuItem menuItem;
+    //LocationManager manager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+    int type;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,11 +79,12 @@ public class TripDetails extends Activity {
             tripDetailsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if(userArrayAdapter.getSelectedItemArray().get(position)==1)
-                        userArrayAdapter.getSelectedItemArray().set(position,0);
-                    else
-                        userArrayAdapter.getSelectedItemArray().set(position,1);
-                    userArrayAdapter.notifyDataSetChanged();
+                    if(tripUsersList.get(position).getStartLocation()==null){
+                        getLocation(0, position);
+                    }
+                    else if(tripUsersList.get(position).getEndLocation()==null){
+                        getLocation(1, position);
+                    }
                 }
             });
         }
@@ -97,7 +117,6 @@ public class TripDetails extends Activity {
         }
         if (id==R.id.total){
             if (isLocationsUpdated()) {
-                setVisible(true);
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle("Total");
                 alert.setMessage("Enter The Trip amount");
@@ -108,7 +127,19 @@ public class TripDetails extends Activity {
 
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        int value = Integer.parseInt(input.getText().toString());
+                        double value = Double.parseDouble(input.getText().toString());
+                        currentTrip.setCost(value);
+
+                        currentTrip.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                tripUsersList.clear();
+                                getTripUserData(trip);
+                                if(menuItem!=null && currentTrip.getCost()>0) {
+                                    menuItem.setTitle("$"+currentTrip.getCost());
+                                }
+                            }
+                        });
                     }
                 });
 
@@ -124,19 +155,18 @@ public class TripDetails extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
-//
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        MenuItem menuItem = menu.findItem(R.id.total);
-//        if(isLocationsUpdated()) {
-//            menuItem.setVisible(true);
-//        } else {
-//            menuItem.setVisible(false);
-//        }
-//        return super.onPrepareOptionsMenu(menu);
-//
-//    }
 
+   @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+        menuItem = menu.findItem(R.id.total);
+        if(isLocationsUpdated()) {
+            if(currentTrip.getCost()>0) {
+                menuItem.setTitle("$"+currentTrip.getCost());
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
+
+    }
     @Override
     public void onBackPressed() {
         if(session!=null && session.isOpened()) {
@@ -153,6 +183,7 @@ public class TripDetails extends Activity {
         query.findInBackground(new FindCallback<TripUser>() {
             public void done(List<TripUser> usersList, ParseException e) {
                 if (e == null) {
+                    tripUsersList.clear();
                     tripUsersList.addAll(usersList);
                     userArrayAdapter.notifyDataSetChanged();
                     for(int i = 0; i<tripUsersList.size();i++){
@@ -163,11 +194,15 @@ public class TripDetails extends Activity {
                     Toast.makeText(getApplicationContext(),"Error Retrieving data",Toast.LENGTH_SHORT).show();
                 }
             }
-            });
+        });
         ParseQuery<Trip> query2 = ParseQuery.getQuery("Trip");
         query2.whereEqualTo("objectId", tripId);
         try {
-           currentTrip = query2.find().get(0);
+            currentTrip = query2.find().get(0);
+            if (isLocationsUpdated() && menuItem!=null)
+                menuItem.setVisible(true);
+            if(currentTrip.getCost()>0 && menuItem!=null)
+                menuItem.setTitle("$"+currentTrip.getCost());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -175,5 +210,71 @@ public class TripDetails extends Activity {
 
     private boolean isLocationsUpdated(){
         return currentTrip != null && currentTrip.getStartLocation() != null && currentTrip.getEndLocation() != null;
+    }
+
+    private void getLocation(final int type, final int position) {
+        ParseGeoPoint.getCurrentLocationInBackground(100000
+                , new Criteria(), new LocationCallback() {
+            @Override
+            public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
+                TripUser tripUser = tripUsersList.get(position);
+                double latitude = 0;
+                double longitude = 0;
+                if(parseGeoPoint==null){
+                    latitude = 40.443411;
+                    longitude = -79.943861;
+                }
+                else{
+                    latitude = parseGeoPoint.getLatitude();
+                    longitude = parseGeoPoint.getLongitude();
+                }
+                String address = getGeo(latitude, longitude)!=null ? getGeo(parseGeoPoint.getLatitude(), parseGeoPoint.getLongitude()): "Pausch Bridge";
+                if (type == 0) {
+                    tripUser.setStartLocGeo(parseGeoPoint);
+                    tripUser.setStartLocation(address);
+                } else {
+                    tripUser.setEndLocGeo(parseGeoPoint);
+                    tripUser.setEndLocation(address);
+                }
+                tripUser.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        userArrayAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+    }
+
+    private String getGeo(double latitude, double longitude) {
+        Geocoder gc;
+        gc = new Geocoder(this, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = gc.getFromLocation(latitude, longitude, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        if (addresses.size() > 0) {
+            Address address = addresses.get(0);
+
+            sb.append(address.getAddressLine(0));
+
+            locationText = sb.toString();
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        getTripUserData(trip);
+        if (isLocationsUpdated() && menuItem!=null)
+            menuItem.setVisible(true);
+        if(currentTrip.getCost()>0 && menuItem!=null)
+            menuItem.setTitle("$"+currentTrip.getCost());
     }
 }

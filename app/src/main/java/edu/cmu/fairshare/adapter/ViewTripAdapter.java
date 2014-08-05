@@ -1,6 +1,7 @@
 package edu.cmu.fairshare.adapter;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,14 @@ public class ViewTripAdapter extends ArrayAdapter<Trip> {
         holder.labelText.setText(tripList.get(position).getTripName());
         holder.dateText.setText(getDate(tripList.get(position).getDate()));
         holder.locationText.setText(tripList.get(position).getStartLocation()+" - "+tripList.get(position).getEndLocation());
+        if(tripList.get(position).getEndLocation()==null){
+            view.setBackgroundResource(R.drawable.green_gradiant);
+            holder.locationText.setTextColor(Color.BLACK);
+            holder.locationText.setText("Active");
+        }
+        else{
+            view.setBackgroundResource(Color.TRANSPARENT);
+        }
         return view;
     }
 

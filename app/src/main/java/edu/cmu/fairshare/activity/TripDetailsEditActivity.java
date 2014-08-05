@@ -18,12 +18,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.parse.ParseUser;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +31,7 @@ import java.util.List;
 
 import edu.cmu.fairshare.R;
 import edu.cmu.fairshare.adapter.PlacesAutoCompleteAdapter;
+import edu.cmu.fairshare.adapter.TripDetailsAdapter;
 import edu.cmu.fairshare.adapter.TripDetailsEditAdapter;
 import edu.cmu.fairshare.model.Trip;
 import edu.cmu.fairshare.model.TripUser;
@@ -42,7 +43,8 @@ public class TripDetailsEditActivity extends Activity {
     String trip;
     String tripName;
     private Trip currentTrip;
-    View view = null;
+    MenuItem menuItem;
+    TripDetailsAdapter userArrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,8 +97,19 @@ public class TripDetailsEditActivity extends Activity {
 
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        int value = Integer.parseInt(input.getText().toString());
-                        // Do something with value!
+                        double value = Double.parseDouble(input.getText().toString());
+                        currentTrip.setCost(value);
+
+                        currentTrip.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                tripUsersList.clear();
+                                getTripUserData(trip);
+                                if(menuItem!=null && currentTrip.getCost()>0) {
+                                    menuItem.setTitle("$"+currentTrip.getCost());
+                                }
+                            }
+                        });
                     }
                 });
 
@@ -117,6 +130,21 @@ public class TripDetailsEditActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menuItem = menu.findItem(R.id.total);
+        if(isLocationsUpdated()) {
+            menuItem.setVisible(true);
+            if(currentTrip.getCost()>0) {
+                menuItem.setTitle("$"+currentTrip.getCost());
+            }
+        } else {
+            menuItem.setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
+
+    }
+
     private void getTripUserData(String tripId){
         ParseQuery<TripUser> query = ParseQuery.getQuery("TripUser");
         ParseObject object = ParseObject.create("Trip");
@@ -125,18 +153,15 @@ public class TripDetailsEditActivity extends Activity {
         query.findInBackground(new FindCallback<TripUser>() {
             public void done(List<TripUser> usersList, ParseException e) {
                 if (e == null) {
-                    Log.i("Inside", String.valueOf(usersList.size()));
                     tripUsersList.addAll(usersList);
                     tripExpandableListAdapter.notifyDataSetChanged();
                     for(int i = 0; i<tripUsersList.size();i++){
 
-                        TripDetailsEditAdapter.start.add("");
-                        TripDetailsEditAdapter.end.add("");
-
+                        tripExpandableListAdapter.start.add("");
+                        tripExpandableListAdapter.end.add("");
                     }
 
                 } else {
-                    Log.i("Error", e.toString());
                     Toast.makeText(getApplicationContext(), "Error Retrieving data", Toast.LENGTH_SHORT).show();
                 }
             }

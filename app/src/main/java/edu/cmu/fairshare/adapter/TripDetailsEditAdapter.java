@@ -38,8 +38,8 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
     public ArrayList<EditText> editTextEndList = new ArrayList<EditText>();
     public ArrayList<Integer> selectedList = new ArrayList<Integer>();
 
-    public static ArrayList<String> start= new ArrayList<String>();
-    public static ArrayList<String> end=new ArrayList<String>();
+    public ArrayList<String> start= new ArrayList<String>();
+    public ArrayList<String> end=new ArrayList<String>();
     int pos=0;
 
     public TripDetailsEditAdapter(Activity context, ArrayList<TripUser> tripList){
@@ -107,9 +107,17 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
         }
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.userText.setText(tripList.get(groupPosition).getName());
+        if(tripList.get(groupPosition).getStartLocation()!=null)
+            holder.startLocationText.setVisibility(View.VISIBLE);
         holder.startLocationText.setText(tripList.get(groupPosition).getStartLocation());
+        if (tripList.get(groupPosition).getEndLocation()!=null)
+            holder.endLocationText.setVisibility(View.VISIBLE);
         holder.endLocationText.setText(tripList.get(groupPosition).getEndLocation());
+        if(tripList.get(groupPosition).getCost()>0)
+            holder.costText.setVisibility(View.VISIBLE);
         holder.costText.setText("$"+decimalFormatter(tripList.get(groupPosition).getCost()));
+        if(tripList.get(groupPosition).getDistance()>0)
+            holder.distanceText.setVisibility(View.VISIBLE);
         holder.profilePic.setProfileId(tripList.get(groupPosition).getCommuterId());
         holder.distanceText.setText(decimalFormatter(tripList.get(groupPosition).getDistance()/1609.344)+" miles");
         return view;
@@ -182,11 +190,11 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
     public void onDone() {
         for(int i=0; i< getGroupCount();i++) {
             if(start.get(i)!="") {
-                tripList.get(i).setStartLocation(start.get(i));
+                tripList.get(i).setStartLocation(start.get(i).split(",")[0]);
                 tripList.get(i).setStartLocGeo(LocationService.getLocationFromAddress(context, start.get(i)));
             }
             if(end.get(i)!="") {
-                tripList.get(i).setEndLocation(end.get(i));
+                tripList.get(i).setEndLocation(end.get(i).split(",")[0]);
                 tripList.get(i).setEndLocGeo(LocationService.getLocationFromAddress(context, end.get(i)));
             }
             tripList.get(i).saveInBackground(new SaveCallback() {
