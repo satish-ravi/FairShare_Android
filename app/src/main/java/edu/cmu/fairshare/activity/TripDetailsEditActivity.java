@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.cmu.fairshare.R;
+import edu.cmu.fairshare.adapter.PlacesAutoCompleteAdapter;
 import edu.cmu.fairshare.adapter.TripDetailsEditAdapter;
 import edu.cmu.fairshare.model.Trip;
 import edu.cmu.fairshare.model.TripUser;
@@ -55,24 +57,9 @@ public class TripDetailsEditActivity extends Activity {
         tripName = (String) intent.getSerializableExtra("tripName");
         labelTextView.setText(tripName);
         getTripUserData(trip);
-        tripExpandableListAdapter = new TripDetailsEditAdapter(this,tripUsersList, tripStringArrayListHashMap);
+        tripExpandableListAdapter = new TripDetailsEditAdapter(this,tripUsersList);
         tripExpandableListView.setAdapter(tripExpandableListAdapter);
         tripExpandableListView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
-        tripExpandableListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            }
-        });
-        tripExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-            @Override
-            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-//                if(tripExpandableListAdapter.selectedList.get(groupPosition)==0)
-                    tripExpandableListAdapter.selectedList.set(groupPosition,1);
-//                else
-//                    tripExpandableListAdapter.selectedList.set(groupPosition,0);
-                return false;
-            }
-        });
     }
 
 
@@ -124,12 +111,13 @@ public class TripDetailsEditActivity extends Activity {
             else
                 Toast.makeText(this,"Please complete the trip to enter total",Toast.LENGTH_SHORT).show();
         }
+        if(id==R.id.done){
+            tripExpandableListAdapter.onDone();
+        }
         return super.onOptionsItemSelected(item);
     }
 
     private void getTripUserData(String tripId){
-        final ArrayList<String> editTextList = new ArrayList<String>();
-        editTextList.add("1");
         ParseQuery<TripUser> query = ParseQuery.getQuery("TripUser");
         ParseObject object = ParseObject.create("Trip");
         object.setObjectId(tripId);
@@ -137,18 +125,16 @@ public class TripDetailsEditActivity extends Activity {
         query.findInBackground(new FindCallback<TripUser>() {
             public void done(List<TripUser> usersList, ParseException e) {
                 if (e == null) {
-                    LayoutInflater inflater = getLayoutInflater();
-                    view = inflater.inflate(R.layout.expandable_list_items, null);
-                    EditText startText = (EditText)view.findViewById(R.id.start_loc_id);
-                    Log.i("Text", startText.toString());
                     Log.i("Inside", String.valueOf(usersList.size()));
-                    for (int i = 0; i<usersList.size();i++){
-                        tripStringArrayListHashMap.put(usersList.get(i),editTextList);
-                        tripExpandableListAdapter.selectedList.add(0);
-                        tripExpandableListAdapter.editTextStartList.add(startText);
-                    }
                     tripUsersList.addAll(usersList);
                     tripExpandableListAdapter.notifyDataSetChanged();
+                    for(int i = 0; i<tripUsersList.size();i++){
+
+                        TripDetailsEditAdapter.start.add("");
+                        TripDetailsEditAdapter.end.add("");
+
+                    }
+
                 } else {
                     Log.i("Error", e.toString());
                     Toast.makeText(getApplicationContext(), "Error Retrieving data", Toast.LENGTH_SHORT).show();

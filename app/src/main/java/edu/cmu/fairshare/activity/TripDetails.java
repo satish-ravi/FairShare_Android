@@ -32,6 +32,7 @@ import edu.cmu.fairshare.adapter.TripDetailsAdapter;
 import edu.cmu.fairshare.model.Trip;
 import edu.cmu.fairshare.model.TripUser;
 
+
 public class TripDetails extends Activity {
     Session session;
     TripDetailsAdapter userArrayAdapter;
@@ -39,7 +40,6 @@ public class TripDetails extends Activity {
     Trip currentTrip;
     String trip;
     String tripName;
-    Menu menu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +75,6 @@ public class TripDetails extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.trip_details, menu);
-        this.menu = menu;
         return true;
     }
 
