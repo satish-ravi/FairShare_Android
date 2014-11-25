@@ -32,6 +32,7 @@ import edu.cmu.fairshare.R;
 import edu.cmu.fairshare.model.Trip;
 import edu.cmu.fairshare.model.TripUser;
 
+
 public class ViewFriendsActivity extends Activity {
 
     private ListView mainListView ;
@@ -223,7 +224,6 @@ public class ViewFriendsActivity extends Activity {
         int count = mainListView.getAdapter().getCount();
         Intent intent =getIntent();
         String tripName = (String)intent.getSerializableExtra("tripName");
-        Log.i("tripName", tripName);
         final Trip trip = new Trip();
         trip.setTripName(tripName);
         trip.setDate(new Date());

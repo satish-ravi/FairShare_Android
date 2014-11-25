@@ -2,15 +2,11 @@ package edu.cmu.fairshare.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -45,7 +41,9 @@ import edu.cmu.fairshare.model.Trip;
 import edu.cmu.fairshare.model.TripUser;
 import edu.cmu.fairshare.service.LocationService;
 
-
+/**
+ * Created by dil on 7/29/14.
+ */
 public class TripDetails extends Activity {
     Session session;
     TripDetailsAdapter userArrayAdapter;
@@ -53,10 +51,8 @@ public class TripDetails extends Activity {
     String trip;
     String tripName;
     Trip currentTrip;
-    double latitude, longitude;
     String locationText;
     MenuItem menuItem;
-    //LocationManager manager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
     int type;
 
     @Override
@@ -116,12 +112,14 @@ public class TripDetails extends Activity {
             startActivity(intent);
         }
         if (id==R.id.total){
+            getTripUserData(trip);
             if (isLocationsUpdated()) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle("Total");
                 alert.setMessage("Enter The Trip amount");
                 final EditText input = new EditText(this);
                 input.setSingleLine();
+                input.setText(""+currentTrip.getCost());
                 input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 alert.setView(input);
 
@@ -177,6 +175,7 @@ public class TripDetails extends Activity {
 
     private void getTripUserData(String tripId){
         ParseQuery<TripUser> query = ParseQuery.getQuery("TripUser");
+        query.orderByAscending("displayName");
         ParseObject object = ParseObject.create("Trip");
         object.setObjectId(tripId);
         query.whereEqualTo("tripId",object);
@@ -220,28 +219,24 @@ public class TripDetails extends Activity {
                 TripUser tripUser = tripUsersList.get(position);
                 double latitude = 0;
                 double longitude = 0;
-                if(parseGeoPoint==null){
-                    latitude = 40.443411;
-                    longitude = -79.943861;
-                }
-                else{
+                if (parseGeoPoint != null) {
                     latitude = parseGeoPoint.getLatitude();
                     longitude = parseGeoPoint.getLongitude();
-                }
-                String address = getGeo(latitude, longitude)!=null ? getGeo(parseGeoPoint.getLatitude(), parseGeoPoint.getLongitude()): "Pausch Bridge";
-                if (type == 0) {
-                    tripUser.setStartLocGeo(parseGeoPoint);
-                    tripUser.setStartLocation(address);
-                } else {
-                    tripUser.setEndLocGeo(parseGeoPoint);
-                    tripUser.setEndLocation(address);
-                }
-                tripUser.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        userArrayAdapter.notifyDataSetChanged();
+                    String address = getGeo(latitude, longitude);
+                    if (type == 0) {
+                        tripUser.setStartLocGeo(parseGeoPoint);
+                        tripUser.setStartLocation(address);
+                    } else {
+                        tripUser.setEndLocGeo(parseGeoPoint);
+                        tripUser.setEndLocation(address);
                     }
-                });
+                    tripUser.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            userArrayAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
             }
         });
     }

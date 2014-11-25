@@ -19,6 +19,9 @@ import java.util.List;
 
 import edu.cmu.fairshare.R;
 
+/**
+ * Created by dil on 7/29/14.
+ */
 public class CreateTripActivity extends Activity {
 
 

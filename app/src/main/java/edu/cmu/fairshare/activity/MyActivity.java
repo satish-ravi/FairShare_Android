@@ -16,6 +16,7 @@ import com.facebook.model.GraphUser;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.ParseException;
@@ -25,7 +26,9 @@ import edu.cmu.fairshare.R;
 import edu.cmu.fairshare.model.Trip;
 import edu.cmu.fairshare.model.TripUser;
 
-
+/**
+ * Created by dil on 7/29/14.
+ */
 public class MyActivity extends Activity {
     private Dialog progressDialog;
     static final String TAG = "FairShare";
@@ -34,10 +37,6 @@ public class MyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-        ParseObject.registerSubclass(Trip.class);
-        ParseObject.registerSubclass(TripUser.class);
-        Parse.initialize(this, "8670VmAcvjt4wvLbpEQWTWviW8WIpDNePGUdCvUA", "vTGi3cFFJDjK0Glbx2Z4Z8B5SHlG2MiczHShlo04");
-        ParseFacebookUtils.initialize(getString(R.string.appID));
         ParseUser currentUser = ParseUser.getCurrentUser();
         if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
             // Go to the user info activity
@@ -64,8 +63,6 @@ public class MyActivity extends Activity {
             public void done(ParseUser user, ParseException err) {
                 MyActivity.this.progressDialog.dismiss();
                 if (user == null) {
-                    Log.d(MyActivity.TAG,
-                            "Uh oh. The user cancelled the Facebook login.");
                 } else if (user.isNew()) {
                     Log.d(MyActivity.TAG,
                             "User signed up and logged in through Facebook!");
@@ -89,6 +86,8 @@ public class MyActivity extends Activity {
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("displayName", user.getFirstName()+" "+user.getLastName());
                     ParseUser.getCurrentUser().saveInBackground();
+                    ParseInstallation.getCurrentInstallation().put("userId", user.getId());
+                    ParseInstallation.getCurrentInstallation().saveInBackground();
                 }
             }
         });

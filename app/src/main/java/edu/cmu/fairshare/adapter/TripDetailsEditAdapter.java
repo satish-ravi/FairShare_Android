@@ -156,7 +156,6 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
                 }
             }
         });
-//        Log.i("Pos", ""+pos);
         return view;
     }
     public String decimalFormatter(double value){
@@ -197,12 +196,11 @@ public class TripDetailsEditAdapter extends BaseExpandableListAdapter implements
                 tripList.get(i).setEndLocation(end.get(i).split(",")[0]);
                 tripList.get(i).setEndLocGeo(LocationService.getLocationFromAddress(context, end.get(i)));
             }
-            tripList.get(i).saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    notifyDataSetChanged();
-                }
-            });
+            try {
+                tripList.get(i).save();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
         }
 

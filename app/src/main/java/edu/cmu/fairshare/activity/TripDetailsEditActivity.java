@@ -36,6 +36,9 @@ import edu.cmu.fairshare.adapter.TripDetailsEditAdapter;
 import edu.cmu.fairshare.model.Trip;
 import edu.cmu.fairshare.model.TripUser;
 
+/**
+ * Created by dil on 7/29/14.
+ */
 public class TripDetailsEditActivity extends Activity {
     TripDetailsEditAdapter tripExpandableListAdapter;
     ArrayList<TripUser> tripUsersList;
@@ -83,6 +86,7 @@ public class TripDetailsEditActivity extends Activity {
             Intent intent = new Intent(this, MyActivity.class);
             startActivity(intent);
         }if (id==R.id.total){
+            getTripUserData(trip);
             if (isLocationsUpdated()) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -92,6 +96,7 @@ public class TripDetailsEditActivity extends Activity {
 // Set an EditText view to get user input
                 final EditText input = new EditText(this);
                 input.setSingleLine();
+                input.setText(""+currentTrip.getCost());
                 input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 alert.setView(input);
 
@@ -126,6 +131,7 @@ public class TripDetailsEditActivity extends Activity {
         }
         if(id==R.id.done){
             tripExpandableListAdapter.onDone();
+            getTripUserData(trip);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -147,12 +153,14 @@ public class TripDetailsEditActivity extends Activity {
 
     private void getTripUserData(String tripId){
         ParseQuery<TripUser> query = ParseQuery.getQuery("TripUser");
+        query.orderByAscending("displayName");
         ParseObject object = ParseObject.create("Trip");
         object.setObjectId(tripId);
         query.whereEqualTo("tripId",object);
         query.findInBackground(new FindCallback<TripUser>() {
             public void done(List<TripUser> usersList, ParseException e) {
                 if (e == null) {
+                    tripUsersList.clear();
                     tripUsersList.addAll(usersList);
                     tripExpandableListAdapter.notifyDataSetChanged();
                     for(int i = 0; i<tripUsersList.size();i++){

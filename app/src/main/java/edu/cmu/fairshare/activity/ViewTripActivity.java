@@ -25,6 +25,9 @@ import edu.cmu.fairshare.R;
 import edu.cmu.fairshare.adapter.ViewTripAdapter;
 import edu.cmu.fairshare.model.Trip;
 
+/**
+ * Created by dil on 7/29/14.
+ */
 public class ViewTripActivity extends Activity {
     Session session;
     ViewTripAdapter tripArrayAdapter;
@@ -69,7 +72,6 @@ public class ViewTripActivity extends Activity {
                     swipeRefreshLayout.setEnabled(topRowVerticalPosition >= 0);
                 }
             });
-
             tripListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
